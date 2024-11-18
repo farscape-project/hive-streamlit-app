@@ -7,6 +7,7 @@ from os.path import isfile
 from typing import TYPE_CHECKING
 
 import altair as alt
+import hjson
 import matplotlib.pyplot as plt
 import numpy as np
 import pyssam
@@ -186,46 +187,57 @@ def custom_theme() -> dict[str, Any]:
         },
     }
 
+def get_parameters_from_config(config_name):
+    """ 
+    Automatically get uncertain physical parameters from uq-toolkit config
+    file.
+    Example config file is in the huggingface repo. 
+    Each uncertain param should have a "human-description" field to use 
+    as a label for the slider.
+    We compute min and max values based on "distribution" params, assuming 
+    the distribution is normal
+
+    Parameters
+    ----------
+    config_name : str
+        /path/to/config.json
+    """
+    with open(config_name, "r") as f:
+        config = hjson.load(f)
+
+    # find all apps for UQ the uq-toolkit config file
+    app_name_list = config["apps"].keys()
+
+    name_list = []
+    min_val_list = []
+    max_val_list = []
+    for fname in app_name_list:
+        app_type = config["apps"][fname]["type"]
+        # uq-toolkit supports "moose" and "json" for app configs, 
+        # we just use "moose" now
+        if app_type == "moose":
+            # shortcut for params in this specific app
+            uq_config = config["apps"][fname]["uncertain-params"]
+            for key_i in uq_config:
+                for param_i in uq_config[key_i]:
+                    # shortcut for the current parameter
+                    uq_param_config = uq_config[key_i][param_i]
+                    # check distribution is uniform, 
+                    # otherwise we cannot calc min and max values properly
+                    if uq_param_config["distribution"]["name"] != "uniform":
+                        raise NotImplementedError("we only implemented uniform priors so far")
+                    # append these to list, then they can be used as kwargs 
+                    # for streamlit sliders
+                    name_list.append(uq_param_config["human-description"])
+                    min_val_list.append(float(uq_param_config["distribution"]["loc"]))
+                    max_val_list.append(float(uq_param_config["distribution"]["loc"]+uq_param_config["distribution"]["scale"]))
+    
+    return name_list, min_val_list, max_val_list
+
 
 def application_page():
     alt.themes.register("custom_theme", custom_theme)
     alt.themes.enable("custom_theme")
-
-    with st.sidebar:
-        st.header("Surrogate Parameters")
-
-        num_modes = st.slider(
-            label="Number of POD modes",
-            min_value=2,
-            max_value=5,
-            value=4,
-            step=1,
-        )
-
-        st.divider()
-        st.header("Physical Parameters")
-
-        htc_coef = st.slider(
-            label="Pipe heat transfer coefficient (scaling factor)",
-            min_value=0.9,
-            max_value=1.1,
-            value=1.0,
-            step=0.01,
-        )
-        e_cond = st.slider(
-            label="Electrical conductivity (scaling factor)",
-            min_value=0.9,
-            max_value=1.1,
-            value=1.0,
-            step=0.01,
-        )
-        current = st.slider(
-            label="Current",
-            min_value=900.0,
-            max_value=1100.0,
-            value=1000.0,
-            step=1.0,
-        )
 
     MODEL_DIR = "tmp_data"
     REGRESSION_MODEL_NAME = "xgb_model.bin"
@@ -242,8 +254,38 @@ def application_page():
             local_dir=f"{MODEL_DIR}/",
         )
 
+
+    with st.sidebar:
+        st.header("Surrogate Parameters")
+
+        num_modes = st.slider(
+            label="Number of POD modes",
+            min_value=2,
+            max_value=5,
+            value=4,
+            step=1,
+        )
+
+        st.divider()
+        st.header("Physical Parameters")
+
+        name_list, min_val_list, max_val_list = get_parameters_from_config("tmp_data/config.jsonc")
+        
+        coefs_to_test = []
+        slider_dict = dict.fromkeys(name_list)
+        for name_i, min_val, max_val in zip(name_list, min_val_list, max_val_list):
+            mid_value = (max_val+min_val)/2
+            slider_val = st.slider(
+                label=name_i,
+                min_value=min_val,
+                max_value=max_val,
+                value=mid_value,
+                step=mid_value/100,
+            )
+            coefs_to_test.append(slider_val)
+
     tab_data, field_vals = generate_data(
-        coeff_list=[htc_coef, current, e_cond],
+        coeff_list=coefs_to_test,
         xgb_file=REGRESSION_MODEL_PATH,
         pod_file=SPATIAL_MODEL_PATH,
         num_modes=num_modes,
