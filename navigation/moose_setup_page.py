@@ -4,16 +4,22 @@ from glob import glob
 from io import StringIO
 from os import makedirs, path
 
+from streamlit_ace import st_ace, KEYBINDINGS, LANGUAGES, THEMES
 import streamlit as st
 import streamlit.components.v1 as components
 
 
-def output_moose_txt(fname, contents):
+def output_moose_txt(fname, contents, theme="terminal", font_size=11):
     with st.expander(fname):
-        # render moose file as code, using markdown syntax
-        # need to add blank line at start and end, to avoid text being skipped
-        st.markdown(f"```toml\n{contents}\n```")
-    # st.divider()
+        content = st_ace(
+            language="toml",
+            theme=theme,
+            keybinding="vscode",
+            font_size=font_size,
+            tab_size=4,
+            min_lines=45,
+            value=contents,
+        )
 
 
 def moose_setup_page():
@@ -37,6 +43,10 @@ def moose_setup_page():
         ),
         unsafe_allow_html=True,
     )
+
+    with st.sidebar:
+        font_size = st.slider("Font size", 5, 24, 14)
+        theme = st.selectbox("Theme", options=THEMES, index=35)
 
     uploaded_file_list = st.file_uploader(
         "Optionally, replace the default MOOSE input files by your own:",
@@ -74,7 +84,12 @@ def moose_setup_page():
                 # To convert to a string based IO:
                 stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
                 string_data = stringio.read()
-                output_moose_txt(uploaded_file.name, string_data)
+                output_moose_txt(
+                    uploaded_file.name,
+                    string_data,
+                    theme=theme,
+                    font_size=font_size,
+                )
             # elif ".e" in uploaded_file.name:
             #     with open("tmp.e", "wb") as f:
             #         f.write(uploaded_file.getvalue())
@@ -87,4 +102,9 @@ def moose_setup_page():
         for file in moose_files:
             with open(file, "r") as f:
                 lines = f.readlines()
-            output_moose_txt(file.split("/")[-1], " ".join(lines))
+            output_moose_txt(
+                file.split("/")[-1],
+                " ".join(lines),
+                theme=theme,
+                font_size=font_size,
+            )

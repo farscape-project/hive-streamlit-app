@@ -10,3 +10,4 @@ pyvista[jupyter]
 huggingface_hub
 hydralit_components
 hjson
+streamlit_ace
