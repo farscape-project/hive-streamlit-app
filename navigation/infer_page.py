@@ -34,7 +34,7 @@ def write_field(field_name, field_val, fname_in, fname_out):
         Name of template exodus file for writing new data to.
         Currently, this is stored on our huggingface repo.
     fname_out : str
-        Name of vtk file to write new field data to (this is read by renderer) 
+        Name of vtk file to write new field data to (this is read by renderer)
     """
     m = pv.read(fname_in)
     c = m.get(0)[0]
@@ -187,14 +187,15 @@ def custom_theme() -> dict[str, Any]:
         },
     }
 
+
 def get_parameters_from_config(config_name):
-    """ 
+    """
     Automatically get uncertain physical parameters from uq-toolkit config
     file.
-    Example config file is in the huggingface repo. 
-    Each uncertain param should have a "human-description" field to use 
+    Example config file is in the huggingface repo.
+    Each uncertain param should have a "human-description" field to use
     as a label for the slider.
-    We compute min and max values based on "distribution" params, assuming 
+    We compute min and max values based on "distribution" params, assuming
     the distribution is normal
 
     Parameters
@@ -213,7 +214,7 @@ def get_parameters_from_config(config_name):
     max_val_list = []
     for fname in app_name_list:
         app_type = config["apps"][fname]["type"]
-        # uq-toolkit supports "moose" and "json" for app configs, 
+        # uq-toolkit supports "moose" and "json" for app configs,
         # we just use "moose" now
         if app_type == "moose":
             # shortcut for params in this specific app
@@ -222,16 +223,25 @@ def get_parameters_from_config(config_name):
                 for param_i in uq_config[key_i]:
                     # shortcut for the current parameter
                     uq_param_config = uq_config[key_i][param_i]
-                    # check distribution is uniform, 
+                    # check distribution is uniform,
                     # otherwise we cannot calc min and max values properly
                     if uq_param_config["distribution"]["name"] != "uniform":
-                        raise NotImplementedError("we only implemented uniform priors so far")
-                    # append these to list, then they can be used as kwargs 
+                        raise NotImplementedError(
+                            "we only implemented uniform priors so far"
+                        )
+                    # append these to list, then they can be used as kwargs
                     # for streamlit sliders
                     name_list.append(uq_param_config["human-description"])
-                    min_val_list.append(float(uq_param_config["distribution"]["loc"]))
-                    max_val_list.append(float(uq_param_config["distribution"]["loc"]+uq_param_config["distribution"]["scale"]))
-    
+                    min_val_list.append(
+                        float(uq_param_config["distribution"]["loc"])
+                    )
+                    max_val_list.append(
+                        float(
+                            uq_param_config["distribution"]["loc"]
+                            + uq_param_config["distribution"]["scale"]
+                        )
+                    )
+
     return name_list, min_val_list, max_val_list
 
 
@@ -254,7 +264,6 @@ def application_page():
             local_dir=f"{MODEL_DIR}/",
         )
 
-
     with st.sidebar:
         st.header("Surrogate Parameters")
 
@@ -269,18 +278,22 @@ def application_page():
         st.divider()
         st.header("Physical Parameters")
 
-        name_list, min_val_list, max_val_list = get_parameters_from_config("tmp_data/config.jsonc")
-        
+        name_list, min_val_list, max_val_list = get_parameters_from_config(
+            "tmp_data/config.jsonc"
+        )
+
         coefs_to_test = []
         slider_dict = dict.fromkeys(name_list)
-        for name_i, min_val, max_val in zip(name_list, min_val_list, max_val_list):
-            mid_value = (max_val+min_val)/2
+        for name_i, min_val, max_val in zip(
+            name_list, min_val_list, max_val_list
+        ):
+            mid_value = (max_val + min_val) / 2
             slider_val = st.slider(
                 label=name_i,
                 min_value=min_val,
                 max_value=max_val,
                 value=mid_value,
-                step=mid_value/100,
+                step=mid_value / 100,
             )
             coefs_to_test.append(slider_val)
 
