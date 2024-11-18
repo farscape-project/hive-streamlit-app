@@ -61,7 +61,7 @@ def home_page():
         "python utils/run_exodus_to_html_scene.py "
         "-i data/vac_meshed_oval_coil_and_stc.e "
         "-o pyvista.html "
-        "-c "
+        "-r metal "
     )
     if st.toggle("show_vacuum"):
         cmd_to_run += "-vac"

@@ -12,7 +12,45 @@ import numpy as np
 import pyssam
 import streamlit as st
 import xgboost as xgb
+import streamlit.components.v1 as components
+import pyvista as pv
 from huggingface_hub import snapshot_download
+
+
+def write_field(field_name, field_val, fname_in, fname_out):
+    """
+    Use pyvista to write field values (from our surrogate) to a template
+    exodus mesh. The scene is then rendered and saved as html, which is read
+    by streamlit
+
+    Parameters
+    ----------
+    field_name : str
+        Name of field to show on scale bar in streamlit app
+    field_val : array_like
+        Scalar field values for writing to points in exodus app
+    fname_in : str
+        Name of template exodus file for writing new data to.
+        Currently, this is stored on our huggingface repo.
+    fname_out : str
+        Name of vtk file to write new field data to (this is read by renderer) 
+    """
+    m = pv.read(fname_in)
+    c = m.get(0)[0]
+    c.point_data.set_scalars(field_val, field_name)
+    c.save(fname_out)
+
+    cmd_to_run = (
+        "python utils/run_exodus_to_html_scene.py "
+        f"-i {fname_out} "
+        "-o field.html "
+        "-r field "
+    )
+    os.system(cmd_to_run)
+
+    HtmlFile = open("tmp_data/field.html", "r", encoding="utf-8")
+    source_code = HtmlFile.read()
+    components.html(source_code, height=600, width=600)
 
 
 class Reconstructor:
@@ -107,12 +145,13 @@ def generate_data(coeff_list, xgb_file, pod_file, num_modes):
     time_list = np.arange(5, 61, 5)  # TODO: fix hard-codeness
     out_temp = []
     for t in time_list:
-        out_temp.append(
-            recon_model.reconstruct_with_xgboost(
-                t, coeff_list, reduction=np.max, num_modes=num_modes
-            )
+        # do inference
+        data_out = recon_model.reconstruct_with_xgboost(
+            t, coeff_list, reduction=None, num_modes=num_modes
         )
-    return np.c_[time_list, out_temp]
+
+        out_temp.append(data_out.max())
+    return np.c_[time_list, out_temp], data_out
 
 
 def create_timeseries_plot(data):
@@ -199,11 +238,11 @@ def application_page():
     else:
         snapshot_download(
             repo_id="jvwilliams23/hive-xgb",
-            allow_patterns=[REGRESSION_MODEL_NAME, SPATIAL_MODEL_NAME],
+            # allow_patterns=[REGRESSION_MODEL_NAME, SPATIAL_MODEL_NAME],
             local_dir=f"{MODEL_DIR}/",
         )
 
-    data = generate_data(
+    tab_data, field_vals = generate_data(
         coeff_list=[htc_coef, current, e_cond],
         xgb_file=REGRESSION_MODEL_PATH,
         pod_file=SPATIAL_MODEL_PATH,
@@ -239,5 +278,12 @@ def application_page():
 
     st.header("Timeseries plot of HIVE pulse")
     st.pyplot(
-        create_timeseries_plot(data),
+        create_timeseries_plot(tab_data),
+    )
+
+    write_field(
+        "Temperature [K]",
+        field_vals,
+        "tmp_data/example_moose_output_temperature_out.e",
+        "tmp_data/temp_field.vtk",
     )
