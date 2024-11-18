@@ -1,0 +1,10 @@
+altair==5.3.0
+numpy
+streamlit==1.36.0
+matplotlib
+pyssam
+xgboost
+trame-vtk
+trame
+pyvista[jupyter]
+huggingface_hub
