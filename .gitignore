@@ -11,6 +11,7 @@ __pycache__/
 tmp_data
 .DS_Store
 .vscode
+dev_*
 
 # Distribution / packaging
 .Python
