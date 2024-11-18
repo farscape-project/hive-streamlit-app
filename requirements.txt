@@ -8,3 +8,4 @@ trame-vtk
 trame
 pyvista[jupyter]
 huggingface_hub
+hydralit_components
