@@ -31,7 +31,6 @@ def home_page():
 
         **TODO**:
         - Add more plots and data analysis to the `HIVE surrogate` page
-        - Allow user to edit MOOSE input files on web (can upload already)
         - Launch from streamlit (this will be difficult to figure out)? 
             Or create a file that can be downloaded, then uploaded to HPC?
 
@@ -40,6 +39,27 @@ def home_page():
         ),
         unsafe_allow_html=True,
     )
+
+    with st.sidebar:
+        st.title("Welcome to the HIVE web-app")
+        st.markdown(
+            textwrap.dedent(
+            """\
+            <div style="text-align: justify;">
+
+            This work was funded under the Fusion Computing Lab collaboration 
+            between STFC Hartree Centre and UK Atomic Energy Authority.
+
+            Developed by Josh Williams and Robert Gledhill 
+            (STFC Hartree Centre).
+
+            </div>
+            """
+            ),
+            unsafe_allow_html=True,
+        )
+        st.image("images/UKAEA_WHITE_SML_AW.png")
+        st.image("images/UKRI_STFC_HARTREE_CENTRE_WHITETEXT_RGB.png")
 
     # st.divider()
 

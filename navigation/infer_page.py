@@ -270,7 +270,7 @@ def application_page():
         num_modes = st.slider(
             label="Number of POD modes",
             min_value=2,
-            max_value=5,
+            max_value=4,
             value=4,
             step=1,
         )
@@ -336,6 +336,7 @@ def application_page():
         create_timeseries_plot(tab_data),
     )
 
+    st.header("Temperature field at end of pulse")
     write_field(
         "Temperature [K]",
         field_vals,

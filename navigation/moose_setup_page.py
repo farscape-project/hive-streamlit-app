@@ -8,6 +8,7 @@ from streamlit_ace import st_ace, KEYBINDINGS, LANGUAGES, THEMES
 import streamlit as st
 import streamlit.components.v1 as components
 
+# st.set_page_config(layout="wide")
 
 def output_moose_txt(fname, contents, theme="terminal", font_size=11):
     with st.expander(fname):
@@ -36,7 +37,9 @@ def moose_setup_page():
 
         We would like to introduce some way to modify the file on the web,
         and use this to create a UQ-toolkit configuration file. 
-        These could then be launched on a HPC.
+        These could then be launched on a HPC. 
+        We hope that this will enable the app to be used for other MOOSE 
+        models.
     
         </div>
     """
