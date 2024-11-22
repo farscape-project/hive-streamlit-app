@@ -335,7 +335,6 @@ def application_page():
         We chose XGBoost due to the simple nature of the data, but this can 
         easily be replaced with e.g. a neural network defined in pytorch.
 
-        **TODO:** add more analysis e.g. thermocouples, sensitivity, visualisations
         </div>
     """
         ),

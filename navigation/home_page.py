@@ -30,12 +30,7 @@ def home_page():
         The geometry consists of a stainless steel monoblock with a coolant 
         pipe as shown below. The monoblock is heated by a 
         copper induction coil as shown below
-
-        **TODO**:
-        - Add more plots and data analysis to the `HIVE surrogate` page
-        - Launch from streamlit (this will be difficult to figure out)? 
-            Or create a file that can be downloaded, then uploaded to HPC?
-
+        
         </div>
     """
         ),
