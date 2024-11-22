@@ -11,3 +11,4 @@ hydralit_components
 hjson
 streamlit_ace
 stpyvista
+pyssam

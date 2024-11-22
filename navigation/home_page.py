@@ -4,45 +4,10 @@ import textwrap
 
 import streamlit as st
 import streamlit.components.v1 as components
-# from stpyvista.trame_backend import stpyvista
-
-from stpyvista.utils import start_xvfb
-
-if "IS_XVFB_RUNNING" not in st.session_state:
-  start_xvfb()
-  st.session_state.IS_XVFB_RUNNING = True 
-from stpyvista import stpyvista
 import pyvista as pv
+from stpyvista import stpyvista
+from utils.run_exodus_to_html_scene import show_geom
 
-
-def show_geom(inputfile, rendering, show_vacuum=False):
-    plotter = pv.Plotter(window_size=[400,400])
-
-    # Create a mesh with a cube 
-    mesh = pv.read(inputfile)
-    if rendering.lower() == "metal":
-        # plot coil with RGB for copper
-        plotter.add_mesh(mesh.get(0)["coil"], color=[184, 115, 51])
-        # plot target with RGB for copper
-        plotter.add_mesh(mesh.get(0)["target"], color=[225,229,233])
-        if show_vacuum:
-            plotter.add_mesh(mesh.get(0)["vacuum_region"], opacity=0.2)
-    elif rendering.lower() == "field":
-        cmap = "plasma"
-        plotter.add_mesh(mesh, cmap=cmap)
-    elif rendering.lower() == "none":
-        for block_name in mesh.get(0).keys():
-            # check for vacuum, and avoid showing it
-            if "vacuum" in block_name.lower():
-                if show_vacuum:
-                    plotter.add_mesh(mesh.get(0)[block_name], opacity=0.2)
-            else:
-                plotter.add_mesh(mesh.get(0)[block_name])
-
-    # Final touches
-    plotter.view_isometric()
-    pv.global_theme.transparent_background = True
-    return plotter
 
 def home_page():
     st.divider()
