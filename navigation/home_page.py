@@ -42,7 +42,7 @@ def show_geom(inputfile, rendering, show_vacuum=False):
     # Final touches
     plotter.view_isometric()
     pv.global_theme.transparent_background = True
-
+    return plotter
 
 def home_page():
     st.divider()
