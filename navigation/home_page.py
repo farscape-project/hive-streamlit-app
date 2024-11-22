@@ -12,6 +12,7 @@ if "IS_XVFB_RUNNING" not in st.session_state:
   start_xvfb()
   st.session_state.IS_XVFB_RUNNING = True 
 from stpyvista import stpyvista
+import pyvista as pv
 
 
 def show_geom(inputfile, rendering, showvac=False):
