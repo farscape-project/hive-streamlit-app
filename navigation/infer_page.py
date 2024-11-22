@@ -10,7 +10,10 @@ import altair as alt
 import hjson
 import matplotlib.pyplot as plt
 import numpy as np
-import pyssam
+try:
+    import pyssam
+except:
+    print("pyssam not found")
 import streamlit as st
 import xgboost as xgb
 import streamlit.components.v1 as components
