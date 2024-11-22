@@ -2,9 +2,37 @@ import datetime
 import os
 import textwrap
 
-# import stpyvista
+from stpyvista.trame_backend import stpyvista
 import streamlit as st
 import streamlit.components.v1 as components
+
+def show_geom(inputfile, rendering, showvac=False):
+    plotter = pv.Plotter(window_size=[400,400])
+
+    # Create a mesh with a cube 
+    mesh = pv.read(inputfile)
+    if rendering.lower() == "metal":
+        # plot coil with RGB for copper
+        plotter.add_mesh(mesh.get(0)["coil"], color=[184, 115, 51])
+        # plot target with RGB for copper
+        plotter.add_mesh(mesh.get(0)["target"], color=[225,229,233])
+        if show_vacuum:
+            plotter.add_mesh(mesh.get(0)["vacuum_region"], opacity=0.2)
+    elif rendering.lower() == "field":
+        cmap = "plasma"
+        plotter.add_mesh(mesh, cmap=cmap)
+    elif rendering.lower() == "none":
+        for block_name in mesh.get(0).keys():
+            # check for vacuum, and avoid showing it
+            if "vacuum" in block_name.lower():
+                if show_vacuum:
+                    plotter.add_mesh(mesh.get(0)[block_name], opacity=0.2)
+            else:
+                plotter.add_mesh(mesh.get(0)[block_name])
+
+    # Final touches
+    plotter.view_isometric()
+    pv.global_theme.transparent_background = True
 
 
 def home_page():
@@ -77,16 +105,22 @@ def home_page():
     Workaround is to use os.system to run a script, then 
     read the data from that
     """
+
+    inputfile = "data/vac_meshed_oval_coil_and_stc.e"
+    rendering = "metal"
+    show_vac = False
     cmd_to_run = (
         "python utils/run_exodus_to_html_scene.py "
-        "-i data/vac_meshed_oval_coil_and_stc.e "
+        f"-i  {inputfile}"
         "-o pyvista.html "
-        "-r metal "
+        f"-r {rendering} "
     )
     if st.toggle("show_vacuum"):
+        show_vac = True
         cmd_to_run += "-vac"
-    os.system(cmd_to_run)
+    # os.system(cmd_to_run)
 
-    HtmlFile = open("tmp_data/pyvista.html", "r", encoding="utf-8")
-    source_code = HtmlFile.read()
-    components.html(source_code, height=300, width=600)
+    # HtmlFile = open("tmp_data/pyvista.html", "r", encoding="utf-8")
+    # source_code = HtmlFile.read()
+    # components.html(source_code, height=300, width=600)
+    stpyvista(show_geom(inputfile, rendering, show_vac))
