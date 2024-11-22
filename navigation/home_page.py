@@ -6,6 +6,12 @@ from stpyvista.trame_backend import stpyvista
 import streamlit as st
 import streamlit.components.v1 as components
 
+from stpyvista.utils import start_xvfb
+
+if "IS_XVFB_RUNNING" not in st.session_state:
+  start_xvfb()
+  st.session_state.IS_XVFB_RUNNING = True 
+
 def show_geom(inputfile, rendering, showvac=False):
     plotter = pv.Plotter(window_size=[400,400])
 
