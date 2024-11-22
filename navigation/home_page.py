@@ -2,9 +2,11 @@ import datetime
 import os
 import textwrap
 
-# import stpyvista
 import streamlit as st
 import streamlit.components.v1 as components
+import pyvista as pv
+from stpyvista import stpyvista
+from utils.run_exodus_to_html_scene import show_geom
 
 
 def home_page():
@@ -77,16 +79,22 @@ def home_page():
     Workaround is to use os.system to run a script, then 
     read the data from that
     """
+
+    inputfile = "data/vac_meshed_oval_coil_and_stc.e"
+    rendering = "metal"
+    show_vacuum = False
     cmd_to_run = (
         "python utils/run_exodus_to_html_scene.py "
-        "-i data/vac_meshed_oval_coil_and_stc.e "
+        f"-i  {inputfile}"
         "-o pyvista.html "
-        "-r metal "
+        f"-r {rendering} "
     )
     if st.toggle("show_vacuum"):
+        show_vacuum = True
         cmd_to_run += "-vac"
-    os.system(cmd_to_run)
+    # os.system(cmd_to_run)
 
-    HtmlFile = open("tmp_data/pyvista.html", "r", encoding="utf-8")
-    source_code = HtmlFile.read()
-    components.html(source_code, height=300, width=600)
+    # HtmlFile = open("tmp_data/pyvista.html", "r", encoding="utf-8")
+    # source_code = HtmlFile.read()
+    # components.html(source_code, height=300, width=600)
+    stpyvista(show_geom(inputfile, rendering, show_vacuum))

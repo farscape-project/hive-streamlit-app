@@ -10,15 +10,20 @@ import altair as alt
 import hjson
 import matplotlib.pyplot as plt
 import numpy as np
-import pyssam
+try:
+    import pyssam
+except:
+    print("pyssam not found")
 import streamlit as st
 import xgboost as xgb
 import streamlit.components.v1 as components
 import pyvista as pv
+from stpyvista import stpyvista
 from huggingface_hub import snapshot_download
+from utils.run_exodus_to_html_scene import show_geom
 
 
-def write_field(field_name, field_val, fname_in, fname_out):
+def old_write_field(field_name, field_val, fname_in, fname_out):
     """
     Use pyvista to write field values (from our surrogate) to a template
     exodus mesh. The scene is then rendered and saved as html, which is read
@@ -52,6 +57,12 @@ def write_field(field_name, field_val, fname_in, fname_out):
     HtmlFile = open("tmp_data/field.html", "r", encoding="utf-8")
     source_code = HtmlFile.read()
     components.html(source_code, height=600, width=600)
+
+def write_field(field_name, field_val, fname_in, fname_out):
+    m = pv.read(fname_in)
+    c = m.get(0)[0]
+    c.point_data.set_scalars(field_val, field_name)
+    stpyvista(show_geom(c, rendering="field"))
 
 
 class Reconstructor:
