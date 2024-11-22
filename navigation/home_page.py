@@ -15,7 +15,7 @@ from stpyvista import stpyvista
 import pyvista as pv
 
 
-def show_geom(inputfile, rendering, showvac=False):
+def show_geom(inputfile, rendering, show_vacuum=False):
     plotter = pv.Plotter(window_size=[400,400])
 
     # Create a mesh with a cube 
@@ -117,7 +117,7 @@ def home_page():
 
     inputfile = "data/vac_meshed_oval_coil_and_stc.e"
     rendering = "metal"
-    show_vac = False
+    show_vacuum = False
     cmd_to_run = (
         "python utils/run_exodus_to_html_scene.py "
         f"-i  {inputfile}"
@@ -125,11 +125,11 @@ def home_page():
         f"-r {rendering} "
     )
     if st.toggle("show_vacuum"):
-        show_vac = True
+        show_vacuum = True
         cmd_to_run += "-vac"
     # os.system(cmd_to_run)
 
     # HtmlFile = open("tmp_data/pyvista.html", "r", encoding="utf-8")
     # source_code = HtmlFile.read()
     # components.html(source_code, height=300, width=600)
-    stpyvista(show_geom(inputfile, rendering, show_vac))
+    stpyvista(show_geom(inputfile, rendering, show_vacuum))
