@@ -2,9 +2,10 @@ import datetime
 import os
 import textwrap
 
-from stpyvista.trame_backend import stpyvista
 import streamlit as st
 import streamlit.components.v1 as components
+# from stpyvista.trame_backend import stpyvista
+from stpyvista import stpyvista
 
 from stpyvista.utils import start_xvfb
 
