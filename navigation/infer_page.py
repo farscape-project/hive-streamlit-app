@@ -67,15 +67,19 @@ def write_field(field_name, field_val, fname_in, fname_out):
 
 
 class Reconstructor:
-    def __init__(self, xgb_fname, pod_coefs_fname):
+    def __init__(_self, xgb_fname, pod_coefs_fname):
         """
         Temporary copy of a class from uq_toolkit
         (until uq_toolkit public for installation)
         """
-        self._load_xgb_regressor(xgb_fname)
-        self._load_pyssam(pod_coefs_fname)
+        _self.sam_obj = pyssam.SAM(
+            np.random.normal(size=(3, 3))
+        )  # create dummy sam_obj
+        _self.xgb_model = _self._load_xgb_regressor(xgb_fname)
+        _self.mean_dataset_columnvector, _self.pca_model_components, _self.sam_obj.std = _self._load_pyssam(pod_coefs_fname)
 
-    def _load_xgb_regressor(self, xgb_fname):
+    @st.cache_resource
+    def _load_xgb_regressor(_self, xgb_fname):
         """
         Read file with XGBoost config and weights.
         Prerequisite is that `train_xgb.py` has been run already.
@@ -85,10 +89,12 @@ class Reconstructor:
         xgb_fname : str
             /path/to/xgb_model.bin
         """
-        self.xgb_model = xgb.Booster()
-        self.xgb_model.load_model(xgb_fname)
+        xgb_model = xgb.Booster()
+        xgb_model.load_model(xgb_fname)
+        return xgb_model
 
-    def _load_pyssam(self, pyssam_fname):
+    @st.cache_data
+    def _load_pyssam(_self, pyssam_fname):
         """
         Create a dummy pyssam object, and read file with POD information.
         Prerequisite is that `find_pod_modes.py` has been run already.
@@ -101,16 +107,12 @@ class Reconstructor:
         # TODO: Implement such that object can be used with no dataset
         # i.e. train offline and use obj at inference time
         # make pyssam.morph_model a staticmethod
-        self.sam_obj = pyssam.SAM(
-            np.random.normal(size=(3, 3))
-        )  # create dummy sam_obj
+
         npzfile = np.load(pyssam_fname)
-        self.mean_dataset_columnvector = npzfile["mean"]
-        self.pca_model_components = npzfile["pca_components"]
-        self.sam_obj.std = npzfile["pca_std"]
+        return npzfile["mean"], npzfile["pca_components"], npzfile["pca_std"]
 
     def reconstruct_with_xgboost(
-        self, t, param_list, reduction=None, num_modes=2
+        _self, t, param_list, reduction=None, num_modes=2
     ):
         """
         Reconstruct a field using POD pre-defined modes, and mode coefficients
@@ -136,14 +138,14 @@ class Reconstructor:
             Reconstructed field values (or, optionally reduced to scalar)
         """
         feat_mat = xgb.DMatrix([[t, *param_list]])
-        pod_coefs = np.array(self.xgb_model.predict(feat_mat)).squeeze()
+        pod_coefs = np.array(_self.xgb_model.predict(feat_mat)).squeeze()
 
         # fix for when num_modes > pod_coefs
         num_modes = min(len(pod_coefs), num_modes)
 
-        recon_field = self.sam_obj.morph_model(
-            self.mean_dataset_columnvector,
-            self.pca_model_components,
+        recon_field = _self.sam_obj.morph_model(
+            _self.mean_dataset_columnvector,
+            _self.pca_model_components,
             pod_coefs[:num_modes],
             num_modes=num_modes,
         )
@@ -166,7 +168,7 @@ def generate_data(coeff_list, xgb_file, pod_file, num_modes):
         out_temp.append(data_out.max())
     return np.c_[time_list, out_temp], data_out
 
-
+@st.cache_data
 def create_timeseries_plot(data):
     fig, ax = plt.subplots()
     ax.plot(data[:, 0], data[:, 1])
@@ -174,6 +176,7 @@ def create_timeseries_plot(data):
     ax.set_ylabel("Maximum temperature [K]")
     return fig
 
+@st.cache_data
 def get_parameters_from_config(config_name):
     """
     Automatically get uncertain physical parameters from uq-toolkit config
