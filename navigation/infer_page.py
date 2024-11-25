@@ -63,7 +63,9 @@ def write_field(field_name, field_val, fname_in, fname_out):
     m = pv.read(fname_in)
     c = m.get(0)[0]
     c.point_data.set_scalars(field_val, field_name)
-    stpyvista(show_geom(c, rendering="field"))
+    c.save(fname_out)
+    del m, c, field_val
+    stpyvista(show_geom(fname_out, rendering="field"))
 
 
 class Reconstructor:
@@ -166,6 +168,7 @@ def generate_data(coeff_list, xgb_file, pod_file, num_modes):
         )
 
         out_temp.append(data_out.max())
+    del recon_model
     return np.c_[time_list, out_temp], data_out
 
 @st.cache_data

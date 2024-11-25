@@ -4,7 +4,7 @@ from sys import argv
 import pyvista as pv
 import streamlit as st
 
-@st.cache_data
+@st.cache_resource
 def show_geom(inputfile, rendering, show_vacuum=False):
     plotter = pv.Plotter(window_size=[400,400])
 
@@ -33,6 +33,7 @@ def show_geom(inputfile, rendering, show_vacuum=False):
             else:
                 plotter.add_mesh(mesh.get(0)[block_name])
 
+    del mesh
     # Final touches
     plotter.view_isometric()
     pv.global_theme.transparent_background = True
@@ -82,3 +83,4 @@ if __name__ == "__main__":
     pv.global_theme.transparent_background = True
     makedirs("tmp_data", exist_ok=True)
     plotter.export_html(f'tmp_data/{args.outputfile}')
+    del plotter
