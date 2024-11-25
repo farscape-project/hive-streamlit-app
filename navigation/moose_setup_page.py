@@ -7,6 +7,8 @@ from os import makedirs, path
 from streamlit_ace import st_ace, KEYBINDINGS, LANGUAGES, THEMES
 import streamlit as st
 import streamlit.components.v1 as components
+from stpyvista import stpyvista
+from utils.run_exodus_to_html_scene import show_geom
 
 # st.set_page_config(layout="wide")
 
@@ -71,10 +73,12 @@ def moose_setup_page():
                 makedirs("tmp_data/", exist_ok=True)
                 with open("tmp_data/tmp.e", "wb") as f:
                     f.write(uploaded_file.getvalue())
-                os.system(cmd_to_run)  # run python file
-                HtmlFile = open("tmp_data/tmp.html", "r", encoding="utf-8")
-                source_code = HtmlFile.read()
-                components.html(source_code, height=300, width=600)
+                stpyvista(show_geom("tmp_data/tmp.e", rendering="field"))
+
+                # os.system(cmd_to_run)  # run python file
+                # HtmlFile = open("tmp_data/tmp.html", "r", encoding="utf-8")
+                # source_code = HtmlFile.read()
+                # components.html(source_code, height=300, width=600)
                 pop_inds.append(i)
         # remove mesh files from list to avoid showing again,
         # do this by looping backwards over the list, to avoid accidentally
