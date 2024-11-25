@@ -1,10 +1,12 @@
 import hydralit_components as hc
-import streamlit as st
-# setup XVFB for streamlit cloud
-from stpyvista.utils import start_xvfb
-if "IS_XVFB_RUNNING" not in st.session_state:
-  start_xvfb()
-  st.session_state.IS_XVFB_RUNNING = True 
+import platform
+if platform.system() != "Darwin":
+  import streamlit as st
+  # setup XVFB for streamlit cloud
+  from stpyvista.utils import start_xvfb
+  if "IS_XVFB_RUNNING" not in st.session_state:
+    start_xvfb()
+    st.session_state.IS_XVFB_RUNNING = True 
 from navigation.infer_page import application_page
 from navigation.home_page import home_page
 from navigation.moose_setup_page import moose_setup_page

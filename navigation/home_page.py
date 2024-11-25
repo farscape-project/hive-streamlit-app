@@ -7,7 +7,7 @@ import streamlit.components.v1 as components
 import pyvista as pv
 from stpyvista import stpyvista
 from utils.run_exodus_to_html_scene import show_geom
-
+import platform
 
 def home_page():
     st.divider()
@@ -80,16 +80,19 @@ def home_page():
     show_vacuum = False
     cmd_to_run = (
         "python utils/run_exodus_to_html_scene.py "
-        f"-i  {inputfile}"
+        f"-i  {inputfile} "
         "-o pyvista.html "
         f"-r {rendering} "
     )
     if st.toggle("show_vacuum"):
         show_vacuum = True
         cmd_to_run += "-vac"
-    # os.system(cmd_to_run)
 
-    # HtmlFile = open("tmp_data/pyvista.html", "r", encoding="utf-8")
-    # source_code = HtmlFile.read()
-    # components.html(source_code, height=300, width=600)
-    stpyvista(show_geom(inputfile, rendering, show_vacuum))
+    if platform.system() == "Darwin":
+        os.system(cmd_to_run)
+
+        HtmlFile = open("tmp_data/pyvista.html", "r", encoding="utf-8")
+        source_code = HtmlFile.read()
+        components.html(source_code, height=300, width=600)
+    else:
+        stpyvista(show_geom(inputfile, rendering, show_vacuum))

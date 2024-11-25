@@ -20,6 +20,7 @@ import streamlit.components.v1 as components
 import pyvista as pv
 from stpyvista import stpyvista
 from huggingface_hub import snapshot_download
+import platform
 from utils.run_exodus_to_html_scene import show_geom
 
 
@@ -347,9 +348,17 @@ def application_page():
     )
 
     st.header("Temperature field at end of pulse")
-    write_field(
-        "Temperature [K]",
-        field_vals,
-        "tmp_data/example_moose_output_temperature_out.e",
-        "tmp_data/temp_field.vtk",
-    )
+    if platform.system() == "Darwin":
+        old_write_field(
+            "Temperature [K]",
+            field_vals,
+            "tmp_data/example_moose_output_temperature_out.e",
+            "tmp_data/temp_field.vtk",
+        )
+    else:
+        write_field(
+            "Temperature [K]",
+            field_vals,
+            "tmp_data/example_moose_output_temperature_out.e",
+            "tmp_data/temp_field.vtk",
+        )
