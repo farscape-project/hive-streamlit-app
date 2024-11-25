@@ -174,32 +174,6 @@ def create_timeseries_plot(data):
     ax.set_ylabel("Maximum temperature [K]")
     return fig
 
-
-def custom_theme() -> dict[str, Any]:
-    return {
-        "config": {
-            "axis": {
-                "grid": False,
-                "labelColor": "#7F7F7F",
-                "labelFontSize": 14,
-                "tickColor": "#7F7F7F",
-                "titleColor": "#7F7F7F",
-                "titleFontSize": 16,
-                "titleFontWeight": "normal",
-            },
-            "legend": {
-                "labelColor": "#7F7F7F",
-                "labelFontSize": 14,
-            },
-            "view": {
-                "height": 320,
-                "width": 480,
-                "stroke": False,
-            },
-        },
-    }
-
-
 def get_parameters_from_config(config_name):
     """
     Automatically get uncertain physical parameters from uq-toolkit config
@@ -258,8 +232,6 @@ def get_parameters_from_config(config_name):
 
 
 def application_page():
-    alt.themes.register("custom_theme", custom_theme)
-    alt.themes.enable("custom_theme")
 
     MODEL_DIR = "tmp_data"
     REGRESSION_MODEL_NAME = "xgb_model.bin"
