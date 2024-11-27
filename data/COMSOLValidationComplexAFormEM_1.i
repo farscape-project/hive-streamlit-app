@@ -13,7 +13,7 @@ CurrentMagnitude=1000.0
 #-------------------------------------------------------------------------
 [Mesh]
   type = CoupledMFEMMesh
-  file = ./data/Meshing/vac_meshed_comsol_coil_and_target.e
+  file = ./Meshing/vac_meshed_comsol_coil_and_target.e
   dim = 3
 []
 
