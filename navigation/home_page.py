@@ -75,7 +75,7 @@ def home_page():
     read the data from that
     """
 
-    inputfile = "data/vac_meshed_oval_coil_and_stc.e"
+    inputfile = "./data/vac_meshed_oval_coil_and_stc.e"
     rendering = "metal"
     show_vacuum = False
     cmd_to_run = (
