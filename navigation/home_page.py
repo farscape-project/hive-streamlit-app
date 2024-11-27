@@ -47,8 +47,10 @@ def home_page():
             This work was funded under the Fusion Computing Lab collaboration 
             between STFC Hartree Centre and UK Atomic Energy Authority.
 
-            Developed by Josh Williams and Robert Gledhill 
-            (STFC Hartree Centre).
+            Developed by
+
+            - Josh Williams and Robert Gledhill (STFC Hartree Centre).
+            - Jawad Muhammad and Alexander Blair (UKAEA).
 
             </div>
             """
