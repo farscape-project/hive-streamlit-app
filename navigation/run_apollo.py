@@ -121,9 +121,9 @@ def run_apollo():
     with st.sidebar:
         st.header("KC4 Simulation Demonstration App")
 
-        conductivity = float(st.text_input("Target Conductivity (S/m)"))
-        current_magnitude = float(st.text_input("Current Magnitude (A)"))
-        frequency = float(st.text_input("Frequency (Hz):"))
+        conductivity = float(st.text_input("Target Conductivity (S/m)", value=1.29e6))
+        current_magnitude = float(st.text_input("Current Magnitude (A)", value=1000))
+        frequency = float(st.text_input("Frequency (Hz):", value=1.0e5))
 
     
     result = runSimulation(conductivity, current_magnitude, frequency)
