@@ -24,6 +24,10 @@ def show_geom(inputfile, rendering, show_vacuum=False):
     elif rendering.lower() == "field":
         cmap = "plasma"
         plotter.add_mesh(mesh, cmap=cmap)
+    elif rendering.lower() == "field-apollo":
+        cmap = "plasma"
+        print(mesh.get(0).keys())
+        plotter.add_mesh(mesh.get(0)["target"], scalars="joule_heating_density")#, cmap=cmap)
     elif rendering.lower() == "none":
         for block_name in mesh.get(0).keys():
             # check for vacuum, and avoid showing it
@@ -60,7 +64,7 @@ def get_inputs():
         "--rendering",
         "-r",
         type=str,
-        choices=["metal", "none", "field"],
+        choices=["metal", "none", "field", "field-apollo"],
         default="none",
         help="Show colours for 'target' and 'coil' blocks",
     )
@@ -82,5 +86,6 @@ if __name__ == "__main__":
     plotter = show_geom(args.inputfile, args.rendering, args.show_vacuum)
     pv.global_theme.transparent_background = True
     makedirs("tmp_data", exist_ok=True)
+    print("exporting html")
     plotter.export_html(f'tmp_data/{args.outputfile}')
     del plotter

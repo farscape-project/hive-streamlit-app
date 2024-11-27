@@ -294,7 +294,7 @@ def application_page():
         num_modes=num_modes,
     )
 
-    st.title("Online inference of HIVE experiments")
+    st.title("Online inference of HIVE experiments with surrogates")
 
     st.markdown(
         textwrap.dedent(
@@ -326,17 +326,16 @@ def application_page():
     )
 
     st.header("Temperature field at end of pulse")
-    if platform.system() == "Darwin":
-        old_write_field(
-            "Temperature [K]",
-            field_vals,
-            "tmp_data/example_moose_output_temperature_out.e",
-            "tmp_data/temp_field.vtk",
-        )
-    else:
-        write_field(
-            "Temperature [K]",
-            field_vals,
-            "tmp_data/example_moose_output_temperature_out.e",
-            "tmp_data/temp_field.vtk",
-        )
+    old_write_field(
+        "Temperature [K]",
+        field_vals,
+        "tmp_data/example_moose_output_temperature_out.e",
+        "tmp_data/temp_field.vtk",
+    )
+    # else:
+    #     write_field(
+    #         "Temperature [K]",
+    #         field_vals,
+    #         "tmp_data/example_moose_output_temperature_out.e",
+    #         "tmp_data/temp_field.vtk",
+    #     )

@@ -88,11 +88,12 @@ def home_page():
         show_vacuum = True
         cmd_to_run += "-vac"
 
-    if platform.system() == "Darwin":
-        os.system(cmd_to_run)
+    # if platform.system() == "Darwin":
+    os.makedirs("tmp_data/", exist_ok=True)
+    os.system(cmd_to_run)
 
-        HtmlFile = open("tmp_data/pyvista.html", "r", encoding="utf-8")
-        source_code = HtmlFile.read()
-        components.html(source_code, height=300, width=600)
-    else:
-        stpyvista(show_geom(inputfile, rendering, show_vacuum))
+    HtmlFile = open("tmp_data/pyvista.html", "r", encoding="utf-8")
+    source_code = HtmlFile.read()
+    components.html(source_code, height=300, width=600)
+    # else:
+    #     stpyvista(show_geom(inputfile, rendering, show_vacuum))

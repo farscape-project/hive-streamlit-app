@@ -88,30 +88,31 @@ def create_timeseries_plot(data):
     return fig
 
 
-def custom_theme() -> dict[str, Any]:
-    return {
-        "config": {
-            "axis": {
-                "grid": False,
-                "labelColor": "#7F7F7F",
-                "labelFontSize": 14,
-                "tickColor": "#7F7F7F",
-                "titleColor": "#7F7F7F",
-                "titleFontSize": 16,
-                "titleFontWeight": "normal",
-            },
-            "legend": {
-                "labelColor": "#7F7F7F",
-                "labelFontSize": 14,
-            },
-            "view": {
-                "height": 320,
-                "width": 480,
-                "stroke": False,
-            },
-        },
-    }
+def old_write_field(field_name, fname_in):
+    """
+    Use pyvista to write field values (from our surrogate) to a template
+    exodus mesh. The scene is then rendered and saved as html, which is read
+    by streamlit
 
+    Parameters
+    ----------
+    field_name : str
+        Name of field to show on scale bar in streamlit app
+    fname_in : str
+        Name of exodus file for reading
+    """
+
+    cmd_to_run = (
+        "python utils/run_exodus_to_html_scene.py "
+        f"-i {fname_in} "
+        "-o apollo.html "
+        "-r field-apollo "
+    )
+    os.system(cmd_to_run)
+
+    HtmlFile = open("tmp_data/apollo.html", "r", encoding="utf-8")
+    source_code = HtmlFile.read()
+    components.html(source_code, height=600, width=600)
 
 def run_apollo():
     
@@ -124,11 +125,11 @@ def run_apollo():
         conductivity = float(st.text_input("Target Conductivity (S/m)", value=1.29e6))
         current_magnitude = float(st.text_input("Current Magnitude (A)", value=1000))
         frequency = float(st.text_input("Frequency (Hz):", value=1.0e5))
-
+    if os.path.isfile(Fname_paraview):
+        st.header("Joule heating density (coarse mesh)")
+        old_write_field("joule_heating_density", Fname_paraview)
+        print("Found results", Fname_paraview)
+        os.remove("tmp_data/apollo.html")
+    else:
+        st.markdown("No results found")
     
-    result = runSimulation(conductivity, current_magnitude, frequency)
-    if not result: #successful run
-        return
-
-    st.header("Temperature field at end of pulse")
-    write_field()
