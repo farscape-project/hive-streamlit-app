@@ -27,7 +27,7 @@ from utils.inputFile_modifier import generate_modified_input_file
 import subprocess
 import sys
 
-FNAME_PVTK = './OutputData/COMSOL_CrossVerification'
+FNAME_PVTK = './OutputData/COMSOL_CrossVerification/'
 FNAME_electric_field_re  = './OutputData/electric_field_re.csv'
 FNAME_joule_heating = './OutputData/joule_heating_density.csv'
 
@@ -36,23 +36,16 @@ Fname_electric_field_re = os.path.abspath( FNAME_electric_field_re )
 Fname_joule_heating_density = os.path.abspath( FNAME_joule_heating )
 Fname_paraview = os.path.abspath( FNAME_PVTK )
 
-def write_field():
-
-    mesh = pv.read(Fname_paraview) #readt the pvtk file
-    plotter = pv.Plotter(window_size=[400,400])
-    plotter.add_mesh(mesh, cmap="afmhot", scalars="joule_heating_density")
-
-    del mesh
-    
-    plotter.view_isometric()
-    pv.global_theme.transparent_background = True
-    stpyvista( plotter )
-
 def runSimulation(conductivity, current_magnitude, frequency):
 
-    FNAME = './data/COMSOLValidationComplexAFormEM_1.i'; mpirun="38";
+    mpirun="1"
+    # FNAME = './data/COMSOLValidationComplexAFormEM_1.i'
+    FNAME = './data/COMSOLValidationComplexAFormEM_1.i'; 
 
     new_fname = FNAME[:-2]+"_modified.i"
+
+    run_fname = "./data/COMSOLValidationDummy.i"
+    # run_fname = new_fname
 
     Fname_electric_field_re = os.path.abspath( FNAME_electric_field_re )
     Fname_joule_heating_density = os.path.abspath( FNAME_joule_heating )
@@ -71,7 +64,8 @@ def runSimulation(conductivity, current_magnitude, frequency):
 
     print("Successfully modify the file and saved at : ", new_fname)
 
-    cmd = ["mpirun","-n", mpirun,  "/opt/apollo/apollo-opt", "-i", new_fname ]
+
+    cmd = ["mpirun","-n", mpirun,  "/opt/apollo/apollo-opt", "-i", run_fname, "-w" ]
     p = subprocess.Popen(cmd, stdout=sys.stdout, stderr=sys.stderr, text=True, bufsize=1)
     p.wait()
 
@@ -115,16 +109,40 @@ def old_write_field(field_name, fname_in):
     components.html(source_code, height=600, width=600)
 
 def run_apollo():
-    
-    alt.themes.register("custom_theme", custom_theme)
-    alt.themes.enable("custom_theme")
+    st.title("Simulation of HIVE with Apollo")
+
+    st.markdown(
+        textwrap.dedent(
+            """\
+        <div style="text-align: justify;">
+
+        This mini-app uses a coarse mesh of the HIVE geometry to simulate
+        the heating deposited onto the target. This is done using Apollo.
+
+        The advantages of this compared to the surrogate on the previous slide
+        is its ability to extrapolate to a broader range of (possibly unseen) 
+        parameters.
+
+        </div>
+    """
+        ),
+        unsafe_allow_html=True,
+    )
+
+
 
     with st.sidebar:
-        st.header("KC4 Simulation Demonstration App")
+        st.header("FCL and KC4 Simulation Demonstration App")
 
         conductivity = float(st.text_input("Target Conductivity (S/m)", value=1.29e6))
         current_magnitude = float(st.text_input("Current Magnitude (A)", value=1000))
         frequency = float(st.text_input("Frequency (Hz):", value=1.0e5))
+        button = st.button("Submit", on_click=runSimulation, args=(conductivity, current_magnitude, frequency), type="primary")
+
+    
+    Fname_paraview = "./data/COMSOLValidationDummy_out.e"
+    if button:
+        button = False
     if os.path.isfile(Fname_paraview):
         st.header("Joule heating density (coarse mesh)")
         old_write_field("joule_heating_density", Fname_paraview)

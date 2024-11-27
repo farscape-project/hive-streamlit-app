@@ -194,8 +194,8 @@ CurrentMagnitude=1000.0
     coil_out_boundary = 2
     block = '3 4'
 
-    l_tol = 1e-32
-    l_abs_tol = 1e-32
+    l_tol = 1e-10
+    l_abs_tol = 1e-10
     l_max_its = 1000
     print_level = 1
   []
@@ -203,33 +203,32 @@ CurrentMagnitude=1000.0
 
 [Executioner]
   type = Steady
-  l_tol = 1e-32
-  l_abs_tol = 1e-32
+  l_tol = 1e-8
+  l_abs_tol = 1e-8
   l_max_its = 1000
 
 []
 
-[AuxKernels]
-  [LineSampler]
-    type = MFEMLineSamplerAux
-    filename = ${OutputFname_electric_field_re}
-    variable = electric_field_re
-    num_points = 100
-    start_point = '-0.0114445 -5e-6 0.019444'
-    end_point = '0.0114445 -5e-6 0.019444'
-    header = 't (s), x (m), y (m), z (m), E_x (V/m), E_y (V/m), E_z (V/m)'
-  []
-  [LineSampler2]
-    type = MFEMLineSamplerAux
-    filename = ${OutputFname_joule_heating_density}
-    variable = joule_heating_density
-    num_points = 100
-    start_point = '-0.0114445 -5e-6 0.019444'
-    end_point = '0.0114445 -5e-6 0.019444'
-    header = 't (s), x (m), y (m), z (m), Q(watts/cbm)'
-  []
-
-[]
+# [AuxKernels]
+#   [LineSampler]
+#     type = MFEMLineSamplerAux
+#     filename = ${OutputFname_electric_field_re}
+#     variable = electric_field_re
+#     num_points = 100
+#     start_point = '-0.0114445 -5e-6 0.019444'
+#     end_point = '0.0114445 -5e-6 0.019444'
+#     header = 't (s), x (m), y (m), z (m), E_x (V/m), E_y (V/m), E_z (V/m)'
+#   []
+#   [LineSampler2]
+#     type = MFEMLineSamplerAux
+#     filename = ${OutputFname_joule_heating_density}
+#     variable = joule_heating_density
+#     num_points = 100
+#     start_point = '-0.0114445 -5e-6 0.019444'
+#     end_point = '0.0114445 -5e-6 0.019444'
+#     header = 't (s), x (m), y (m), z (m), Q(watts/cbm)'
+#   []
+# []
 
 [Outputs]
   [ParaViewDataCollection]
@@ -237,10 +236,6 @@ CurrentMagnitude=1000.0
     file_base = ${OutputFname_paraview}
     high_order_output = true
   []
+  exodus=true
 []
-
-
-
-
-
 
