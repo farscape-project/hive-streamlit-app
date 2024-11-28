@@ -261,8 +261,8 @@ def application_page():
         st.header("Surrogate Parameters")
 
         num_modes = st.slider(
-            label="Number of POD modes",
-            min_value=2,
+            label="Number of PCA modes",
+            min_value=1,
             max_value=4,
             value=4,
             step=1,
