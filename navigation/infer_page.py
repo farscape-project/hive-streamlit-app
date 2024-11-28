@@ -18,7 +18,7 @@ import streamlit as st
 import xgboost as xgb
 import streamlit.components.v1 as components
 import pyvista as pv
-from stpyvista import stpyvista
+from stpyvista.panel_backend import stpyvista
 from huggingface_hub import snapshot_download
 import platform
 from utils.run_exodus_to_html_scene import show_geom
