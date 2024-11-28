@@ -277,7 +277,7 @@ def application_page():
 
         coefs_to_test = []
         slider_time = st.slider(
-            label="Time [s]",
+            label="Time (for rendering only) [s]",
             min_value=5,
             max_value=60,
             value=60,
