@@ -12,6 +12,7 @@ tmp_data
 .DS_Store
 .vscode
 dev_*
+tmp_*
 
 # Distribution / packaging
 .Python
