@@ -22,7 +22,7 @@ def show_geom(inputfile, rendering, show_vacuum=False):
         if show_vacuum:
             plotter.add_mesh(mesh.get(0)["vacuum_region"], opacity=0.2)
     elif rendering.lower() == "field":
-        cmap = "plasma"
+        cmap = "coolwarm"
         plotter.add_mesh(mesh, cmap=cmap)
     elif rendering.lower() == "none":
         for block_name in mesh.get(0).keys():
