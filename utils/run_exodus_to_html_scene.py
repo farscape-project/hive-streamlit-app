@@ -4,7 +4,7 @@ from sys import argv
 import pyvista as pv
 import streamlit as st
 
-@st.cache_resource
+# @st.cache_resource
 def show_geom(inputfile, rendering, show_vacuum=False):
     plotter = pv.Plotter(window_size=[400,400])
 
