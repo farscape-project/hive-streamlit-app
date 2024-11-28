@@ -157,7 +157,7 @@ class Reconstructor:
             return recon_field
 
 
-def generate_data(coeff_list, xgb_file, pod_file, num_modes):
+def generate_data(coeff_list, xgb_file, pod_file, num_modes, slider_time=60.0):
     recon_model = Reconstructor(xgb_file, pod_file)
     time_list = np.arange(5, 61, 5)  # TODO: fix hard-codeness
     out_temp = []
@@ -168,6 +168,9 @@ def generate_data(coeff_list, xgb_file, pod_file, num_modes):
         )
 
         out_temp.append(data_out.max())
+    data_out = recon_model.reconstruct_with_xgboost(
+        slider_time, coeff_list, reduction=None, num_modes=num_modes
+    )
     del recon_model
     return np.c_[time_list, out_temp], data_out
 
@@ -273,7 +276,14 @@ def application_page():
         )
 
         coefs_to_test = []
-        slider_dict = dict.fromkeys(name_list)
+        slider_time = st.slider(
+            label="Time [s]",
+            min_value=5,
+            max_value=60,
+            value=60,
+            step=5,
+        )
+
         for name_i, min_val, max_val in zip(
             name_list, min_val_list, max_val_list
         ):
@@ -292,6 +302,7 @@ def application_page():
         xgb_file=REGRESSION_MODEL_PATH,
         pod_file=SPATIAL_MODEL_PATH,
         num_modes=num_modes,
+        slider_time=slider_time
     )
 
     st.title("Online inference of HIVE experiments")
