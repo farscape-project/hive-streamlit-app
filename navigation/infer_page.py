@@ -24,6 +24,8 @@ import platform
 from utils.run_exodus_to_html_scene import show_geom
 
 
+line_plot_file = "tmp_data/temp_vals.txt"
+
 def old_write_field(field_name, field_val, fname_in, fname_out):
     """
     Use pyvista to write field values (from our surrogate) to a template
@@ -158,6 +160,7 @@ class Reconstructor:
 
 
 def generate_data(coeff_list, xgb_file, pod_file, num_modes, slider_time=60.0):
+    global line_plot_file
     recon_model = Reconstructor(xgb_file, pod_file)
     time_list = np.arange(5, 61, 5)  # TODO: fix hard-codeness
     out_temp = []
@@ -172,14 +175,31 @@ def generate_data(coeff_list, xgb_file, pod_file, num_modes, slider_time=60.0):
         slider_time, coeff_list, reduction=None, num_modes=num_modes
     )
     del recon_model
+    try:
+        old_data = np.loadtxt(line_plot_file)
+        np.savetxt(line_plot_file, np.c_[old_data, out_temp])
+    except:
+        np.savetxt(line_plot_file, np.c_[time_list, out_temp])
+
     return np.c_[time_list, out_temp], data_out
 
 @st.cache_data
-def create_timeseries_plot(data):
+def create_timeseries_plot(data, read_file=None):
+
+    plt.close("all")
     fig, ax = plt.subplots()
-    ax.plot(data[:, 0], data[:, 1])
+    ax.plot(data[:, 0], data[:, 1], c="black", lw=1.5)
+
+    # check if file string has been given, if so, we plot the uncertain vals
+    if read_file is not None:
+        all_data = np.loadtxt(line_plot_file)[:,1:-1]
+        if all_data.size > 0:
+            for i in range(all_data.shape[1]):
+                ax.plot(data[:, 0], all_data[:, i], alpha=0.1, c="black")
     ax.set_xlabel("Time [s]")
     ax.set_ylabel("Maximum temperature [K]")
+    for spine_i in ["top", "right"]:
+        ax.spines[spine_i].set_visible(False)
     return fig
 
 @st.cache_data
@@ -296,6 +316,8 @@ def application_page():
                 step=mid_value / 100,
             )
             coefs_to_test.append(slider_val)
+        
+        clean_uq_button = st.button(label="Clear lines from plot")
 
     tab_data, field_vals = generate_data(
         coeff_list=coefs_to_test,
@@ -332,9 +354,37 @@ def application_page():
     )
 
     st.header("Timeseries plot of HIVE pulse")
-    st.pyplot(
-        create_timeseries_plot(tab_data),
+    st.markdown(
+        textwrap.dedent(
+            """\
+        <div style="text-align: justify;">
+
+        Values selected via the sliders are saved to a text file, 
+        and replotted with each new set of parameters. This can help visualise 
+        the potentially small effect of weakly sensitive parameters, such as 
+        electrical conductivity.
+
+        The lines can be cleared from the plot by pushing the button 
+        in the sidebar.
+
+        </div>
+    """
+        ),
+        unsafe_allow_html=True,
     )
+    if clean_uq_button:
+        try:
+            os.remove(line_plot_file)
+            st.pyplot(
+                create_timeseries_plot(tab_data, None),
+            )
+        except:
+            pass
+        clean_uq_button = False
+    else:
+        st.pyplot(
+            create_timeseries_plot(tab_data, line_plot_file),
+        )
 
     st.header("Temperature field at end of pulse")
     if platform.system() == "Darwin":
