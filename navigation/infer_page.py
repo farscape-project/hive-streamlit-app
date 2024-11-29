@@ -386,7 +386,7 @@ def application_page():
             create_timeseries_plot(tab_data, line_plot_file),
         )
 
-    st.header("Temperature field at end of pulse")
+    st.header(f"Temperature field at time = {slider_time} s")
     if platform.system() == "Darwin":
         old_write_field(
             "Temperature [K]",
