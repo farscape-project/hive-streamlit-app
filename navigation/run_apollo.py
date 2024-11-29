@@ -137,17 +137,23 @@ def run_apollo():
         conductivity = float(st.text_input("Target Conductivity (S/m)", value=1.29e6))
         current_magnitude = float(st.text_input("Current Magnitude (A)", value=1000))
         frequency = float(st.text_input("Frequency (Hz):", value=1.0e5))
-        button = st.button("Submit", on_click=runSimulation, args=(conductivity, current_magnitude, frequency), type="primary")
+        button = st.button("Submit", type="primary")
 
-    
-    Fname_paraview = "./data/COMSOLValidationDummy_out.e"
+    simworked = True
     if button:
+        simworked = runSimulation(conductivity, current_magnitude, frequency)
         button = False
-    if os.path.isfile(Fname_paraview):
-        st.header("Joule heating density (coarse mesh)")
-        old_write_field("joule_heating_density", Fname_paraview)
-        print("Found results", Fname_paraview)
-        os.remove("tmp_data/apollo.html")
+
+    st.divider()
+    Fname_paraview = "./data/COMSOLValidationDummy_out.e"
+    if simworked:
+        if os.path.isfile(Fname_paraview):
+            st.header("Joule heating density (coarse mesh)")
+            old_write_field("joule_heating_density", Fname_paraview)
+            print("Found results", Fname_paraview)
+            os.remove("tmp_data/apollo.html")
+        else:
+            st.markdown("No results found")
     else:
-        st.markdown("No results found")
+        st.markdown("**Simulation failed. This usually happens when frequency < 1e5**")
     
