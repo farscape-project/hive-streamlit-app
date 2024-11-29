@@ -69,9 +69,9 @@ def runSimulation(conductivity, current_magnitude, frequency):
     p = subprocess.Popen(cmd, stdout=sys.stdout, stderr=sys.stderr, text=True, bufsize=1)
     p.wait()
 
-    print( "Finisshed running exit code :", p.returncode)    
+    print("Finished running. exit code :", p.returncode)    
 
-    return p.returncode=="0"
+    return p.returncode == 0
 
 
 def create_timeseries_plot(data):
@@ -144,6 +144,7 @@ def run_apollo():
         simworked = runSimulation(conductivity, current_magnitude, frequency)
         button = False
 
+    print(simworked)
     st.divider()
     Fname_paraview = "./data/COMSOLValidationDummy_out.e"
     if simworked:
