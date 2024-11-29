@@ -23,7 +23,7 @@ from huggingface_hub import snapshot_download
 import platform
 from utils.run_exodus_to_html_scene import show_geom
 
-
+render_counter = 0
 line_plot_file = "tmp_data/temp_vals.txt"
 
 def old_write_field(field_name, field_val, fname_in, fname_out):
@@ -62,12 +62,14 @@ def old_write_field(field_name, field_val, fname_in, fname_out):
     components.html(source_code, height=600, width=600)
 
 def write_field(field_name, field_val, fname_in, fname_out):
+    global render_counter
     m = pv.read(fname_in)
     c = m.get(0)[0]
     c.point_data.set_scalars(field_val, field_name)
     c.save(fname_out)
     del m, c, field_val
-    stpyvista(show_geom(fname_out, rendering="field"))
+    render_counter += 1
+    stpyvista(show_geom(fname_out, rendering="field", render_counter=render_counter))
 
 
 class Reconstructor:
