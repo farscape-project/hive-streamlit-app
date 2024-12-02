@@ -59,7 +59,7 @@ def old_write_field(field_name, field_val, fname_in, fname_out):
 
     HtmlFile = open("tmp_data/field.html", "r", encoding="utf-8")
     source_code = HtmlFile.read()
-    components.html(source_code, height=600, width=600)
+    components.html(source_code, height=350, width=500)
 
 def write_field(field_name, field_val, fname_in, fname_out):
     global render_counter
@@ -355,51 +355,54 @@ def application_page():
         unsafe_allow_html=True,
     )
 
-    st.header("Timeseries plot of HIVE pulse")
-    st.markdown(
-        textwrap.dedent(
-            """\
-        <div style="text-align: justify;">
+    col_0, col_1 = st.columns(2)
+    with col_0:
+        st.header("Timeseries plot of HIVE pulse")
+        # st.markdown(
+        #     textwrap.dedent(
+        #         """\
+        #     <div style="text-align: justify;">
 
-        Values selected via the sliders are saved to a text file, 
-        and replotted with each new set of parameters. This can help visualise 
-        the potentially small effect of weakly sensitive parameters, such as 
-        electrical conductivity.
+        #     Values selected via the sliders are saved to a text file, 
+        #     and replotted with each new set of parameters. This can help visualise 
+        #     the potentially small effect of weakly sensitive parameters, such as 
+        #     electrical conductivity.
 
-        The lines can be cleared from the plot by pushing the button 
-        in the sidebar.
+        #     The lines can be cleared from the plot by pushing the button 
+        #     in the sidebar.
 
-        </div>
-    """
-        ),
-        unsafe_allow_html=True,
-    )
-    if clean_uq_button:
-        try:
-            os.remove(line_plot_file)
+        #     </div>
+        # """
+        #     ),
+        #     unsafe_allow_html=True,
+        # )
+        if clean_uq_button:
+            try:
+                os.remove(line_plot_file)
+                st.pyplot(
+                    create_timeseries_plot(tab_data, None),
+                )
+            except:
+                pass
+            clean_uq_button = False
+        else:
             st.pyplot(
-                create_timeseries_plot(tab_data, None),
+                create_timeseries_plot(tab_data, line_plot_file),
             )
-        except:
-            pass
-        clean_uq_button = False
-    else:
-        st.pyplot(
-            create_timeseries_plot(tab_data, line_plot_file),
-        )
 
-    st.header(f"Temperature field at time = {slider_time} s")
-    if platform.system() == "Darwin":
-        old_write_field(
-            "Temperature [K]",
-            field_vals,
-            "tmp_data/example_moose_output_temperature_out.e",
-            "tmp_data/temp_field.vtk",
-        )
-    else:
-        write_field(
-            "Temperature [K]",
-            field_vals,
-            "tmp_data/example_moose_output_temperature_out.e",
-            "tmp_data/temp_field.vtk",
-        )
+    with col_1:
+        st.header(f"Temperature field at time = {slider_time} s")
+        if platform.system() == "Darwin":
+            old_write_field(
+                "Temperature [K]",
+                field_vals,
+                "tmp_data/example_moose_output_temperature_out.e",
+                "tmp_data/temp_field.vtk",
+            )
+        else:
+            write_field(
+                "Temperature [K]",
+                field_vals,
+                "tmp_data/example_moose_output_temperature_out.e",
+                "tmp_data/temp_field.vtk",
+            )
