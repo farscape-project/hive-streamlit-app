@@ -390,17 +390,17 @@ def application_page():
 
     with col_1:
         st.header(f"Temperature field at time = {slider_time} s")
-        if platform.system() == "Darwin":
-            old_write_field(
-                "Temperature [K]",
-                field_vals,
-                "tmp_data/example_moose_output_temperature_out.e",
-                "tmp_data/temp_field.vtk",
-            )
-        else:
-            write_field(
-                "Temperature [K]",
-                field_vals,
-                "tmp_data/example_moose_output_temperature_out.e",
-                "tmp_data/temp_field.vtk",
-            )
+        # if platform.system() == "Darwin":
+        old_write_field(
+            "Temperature [K]",
+            field_vals,
+            "tmp_data/example_moose_output_temperature_out.e",
+            "tmp_data/temp_field.vtk",
+        )
+        # else:
+        #     write_field(
+        #         "Temperature [K]",
+        #         field_vals,
+        #         "tmp_data/example_moose_output_temperature_out.e",
+        #         "tmp_data/temp_field.vtk",
+        #     )
