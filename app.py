@@ -1,7 +1,7 @@
 import hydralit_components as hc
 import platform
+import streamlit as st
 if platform.system() != "Darwin":
-  import streamlit as st
   # setup XVFB for streamlit cloud
   from stpyvista.utils import start_xvfb
 #   if "IS_XVFB_RUNNING" not in st.session_state:
@@ -12,6 +12,7 @@ from navigation.home_page import home_page
 from navigation.moose_setup_page import moose_setup_page
 from navigation.run_apollo import run_apollo
 
+st.set_page_config(layout="wide")
 
 HOME = 'Home'
 APPLICATION = 'HIVE surrogate'
