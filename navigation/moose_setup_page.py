@@ -73,7 +73,7 @@ def moose_setup_page():
                 makedirs("tmp_data/", exist_ok=True)
                 with open("tmp_data/tmp.e", "wb") as f:
                     f.write(uploaded_file.getvalue())
-                stpyvista(show_geom("tmp_data/tmp.e", rendering="field"))
+                stpyvista(show_geom("tmp_data/tmp.e", rendering="none"))
 
                 # os.system(cmd_to_run)  # run python file
                 # HtmlFile = open("tmp_data/tmp.html", "r", encoding="utf-8")
