@@ -4,9 +4,24 @@ from sys import argv
 import pyvista as pv
 import streamlit as st
 
+
 @st.cache_resource
-def show_geom(inputfile, rendering, show_vacuum=False):
+def show_geom(inputfile, rendering, show_vacuum=False, render_counter=0):
+    """
+    st.cache_resource works when an input variable is changed only. 
+    So to update the inference we add the render_counter. Otherwise, this is 
+    always 0.
+
+    Parameters
+    ----------
+    - 
+    -
+    -
+    render_counter : int
+        Dummy parameter to fix caching
+    """
     plotter = pv.Plotter(window_size=[400,400])
+    print(f"render counter = {render_counter}")
 
     # Create a mesh with a cube 
     if type(inputfile) == str:

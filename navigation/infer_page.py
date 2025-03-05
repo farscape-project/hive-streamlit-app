@@ -18,7 +18,7 @@ import streamlit as st
 import xgboost as xgb
 import streamlit.components.v1 as components
 import pyvista as pv
-from stpyvista import stpyvista
+from stpyvista.trame_backend import stpyvista
 from huggingface_hub import snapshot_download
 import platform
 from utils.run_exodus_to_html_scene import show_geom
@@ -62,12 +62,14 @@ def old_write_field(field_name, field_val, fname_in, fname_out):
     components.html(source_code, height=350, width=500)
 
 def write_field(field_name, field_val, fname_in, fname_out):
+    global render_counter
     m = pv.read(fname_in)
     c = m.get(0)[0]
     c.point_data.set_scalars(field_val, field_name)
     c.save(fname_out)
     del m, c, field_val
-    stpyvista(show_geom(fname_out, rendering="field"))
+    render_counter += 1
+    stpyvista(show_geom(fname_out, rendering="field", render_counter=render_counter))
 
 
 class Reconstructor:
@@ -158,6 +160,10 @@ class Reconstructor:
         else:
             return recon_field
 
+<<<<<<< add_apollo
+=======
+
+>>>>>>> add_apollo
 def generate_data(coeff_list, xgb_file, pod_file, num_modes, slider_time=60.0):
     global line_plot_file
     recon_model = Reconstructor(xgb_file, pod_file)
@@ -397,10 +403,4 @@ def application_page():
             "tmp_data/example_moose_output_temperature_out.e",
             "tmp_data/temp_field.vtk",
         )
-        # else:
-        #     write_field(
-        #         "Temperature [K]",
-        #         field_vals,
-        #         "tmp_data/example_moose_output_temperature_out.e",
-        #         "tmp_data/temp_field.vtk",
-        #     )
+
