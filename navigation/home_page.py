@@ -47,8 +47,10 @@ def home_page():
             This work was funded under the Fusion Computing Lab collaboration 
             between STFC Hartree Centre and UK Atomic Energy Authority.
 
-            Developed by Josh Williams and Robert Gledhill 
-            (STFC Hartree Centre).
+            Developed by
+
+            - Josh Williams and Robert Gledhill (STFC Hartree Centre).
+            - Jawad Muhammad and Alexander Blair (UKAEA).
 
             </div>
             """
@@ -75,7 +77,7 @@ def home_page():
     read the data from that
     """
 
-    inputfile = "data/vac_meshed_oval_coil_and_stc.e"
+    inputfile = "./data/vac_meshed_oval_coil_and_stc.e"
     rendering = "metal"
     show_vacuum = False
     cmd_to_run = (
@@ -88,11 +90,12 @@ def home_page():
         show_vacuum = True
         cmd_to_run += "-vac"
 
-    if platform.system() == "Darwin":
-        os.system(cmd_to_run)
+    # if platform.system() == "Darwin":
+    os.makedirs("tmp_data/", exist_ok=True)
+    os.system(cmd_to_run)
 
-        HtmlFile = open("tmp_data/pyvista.html", "r", encoding="utf-8")
-        source_code = HtmlFile.read()
-        components.html(source_code, height=300, width=600)
-    else:
-        stpyvista(show_geom(inputfile, rendering, show_vacuum))
+    HtmlFile = open("tmp_data/pyvista.html", "r", encoding="utf-8")
+    source_code = HtmlFile.read()
+    components.html(source_code, height=300, width=600)
+    # else:
+    #     stpyvista(show_geom(inputfile, rendering, show_vacuum))

@@ -160,7 +160,10 @@ class Reconstructor:
         else:
             return recon_field
 
+<<<<<<< add_apollo
+=======
 
+>>>>>>> add_apollo
 def generate_data(coeff_list, xgb_file, pod_file, num_modes, slider_time=60.0):
     global line_plot_file
     recon_model = Reconstructor(xgb_file, pod_file)
@@ -184,6 +187,7 @@ def generate_data(coeff_list, xgb_file, pod_file, num_modes, slider_time=60.0):
         np.savetxt(line_plot_file, np.c_[time_list, out_temp])
 
     return np.c_[time_list, out_temp], data_out
+
 
 @st.cache_data
 def create_timeseries_plot(data, read_file=None):
@@ -329,7 +333,7 @@ def application_page():
         slider_time=slider_time
     )
 
-    st.title("Online inference of HIVE experiments")
+    st.title("Online inference of HIVE experiments with surrogates")
 
     st.markdown(
         textwrap.dedent(
@@ -392,17 +396,11 @@ def application_page():
 
     with col_1:
         st.header(f"Temperature field at time = {slider_time} s")
-        if platform.system() == "Darwin":
-            old_write_field(
-                "Temperature [K]",
-                field_vals,
-                "tmp_data/example_moose_output_temperature_out.e",
-                "tmp_data/temp_field.vtk",
-            )
-        else:
-            write_field(
-                "Temperature [K]",
-                field_vals,
-                "tmp_data/example_moose_output_temperature_out.e",
-                "tmp_data/temp_field.vtk",
-            )
+        # if platform.system() == "Darwin":
+        old_write_field(
+            "Temperature [K]",
+            field_vals,
+            "tmp_data/example_moose_output_temperature_out.e",
+            "tmp_data/temp_field.vtk",
+        )
+

@@ -1,26 +1,30 @@
 import hydralit_components as hc
 import platform
 import streamlit as st
-if platform.system() != "Darwin":
-  # setup XVFB for streamlit cloud
-  from stpyvista.utils import start_xvfb
-  if "IS_XVFB_RUNNING" not in st.session_state:
-    start_xvfb()
-    st.session_state.IS_XVFB_RUNNING = True 
+# if platform.system() != "Darwin":
+#   # setup XVFB for streamlit cloud
+#   from stpyvista.utils import start_xvfb
+# #   if "IS_XVFB_RUNNING" not in st.session_state:
+# #     start_xvfb()
+# #     st.session_state.IS_XVFB_RUNNING = True 
 from navigation.infer_page import application_page
 from navigation.home_page import home_page
 from navigation.moose_setup_page import moose_setup_page
+from navigation.run_apollo import run_apollo
 
 st.set_page_config(layout="wide")
 
 HOME = 'Home'
 APPLICATION = 'HIVE surrogate'
+APOLLO = "APOLLO"
+
 MOOSE_INFO = 'MOOSE configuration'
 
 
 option_data = [
     {'icon': "🏠", 'label': HOME},
     {'icon': "🤖", 'label': APPLICATION},
+    {'icon': "🤖", 'label': APOLLO},
     {'icon': "🫎", 'label': MOOSE_INFO},
 ]
 over_theme = {'txc_inactive': 'black', 'menu_background': '#F5B7B1', 'txc_active': 'white', 'option_active': '#CD5C5C'}
@@ -38,5 +42,7 @@ if chosen_tab == HOME:
     home_page()
 elif chosen_tab == APPLICATION:
     application_page()
+elif chosen_tab == APOLLO:
+    run_apollo()
 elif chosen_tab == MOOSE_INFO:
     moose_setup_page()

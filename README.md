@@ -8,3 +8,9 @@ The code can be run with
 pip install -r requirements.txt # maybe I missed some requirements
 streamlit run app.py
 ```
+
+Notes for running in container:
+Needed to comment `MFEMLineSamplerAux` (maybe not available in this Apollo version).
+
+If git-lfs not available, need to copy manually.
+
